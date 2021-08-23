@@ -52,7 +52,8 @@ class Urls:
 	cc['小倉'] = '10'
 
 	url_netkeiba = "https://race.netkeiba.com"
-	
+	url_shutuba = "/race/shutuba.html?race_id="
+
 	url_yahookeiba = "https://keiba.yahoo.co.jp/"
 
 	race_list = "/top/race_list.html"
@@ -60,24 +61,31 @@ class Urls:
 
 
 class Race(Soup, Urls):
-	pass
+	
+	def races(self):
+		soup = self.get_soup(self.url_yahookeiba)
+		dfs = self.get_dfs(soup)
+		df = dfs[5]
+		res = []
+		for idx, sr in df.iterrows():
+			dts = sr[0].split()
+			date_str = "2021年" + dts[0]
+			date_dt = datetime.datetime.strptime(date_str, "%Y年%m月%d日")
+			place = re.sub("回", " ", sr[1]).split()[1][:2]
+			k, d = re.sub(place, " ", sr[1]).split()
+			code = str(date_dt.year) 
+			code += self.cc[place] + k.strip("回").rjust(2, "0") + d.strip("日").rjust(2, "0")
+			held = date_dt.strftime("%Y年%m月%d日") + "(" + dts[1][0] + ") " + place
+			mainrace = sr[2]
+			res.append((idx, code, held, mainrace)) # (0, '010203', '2021年08月21日 札幌', '札幌日刊スポーツ杯')
+
+		return res
 
 if __name__ == '__main__':
 
-	s, u = Soup(), Urls()
-	
-	url = u.url_netkeiba + u.top_nave
-	soup = s.get_soup(u.url_yahookeiba)
-	dfs = s.get_dfs(soup)
-	df = dfs[5]
-	for i, sr in df.iterrows():
-		date_str = "2021年" + sr[0].split()[0]
-		date_dt = datetime.datetime.strptime(date_str, "%Y年%m月%d日")
-		place = re.sub("回", " ", sr[1]).split()[1][:2]
-		times, dt = re.sub(place, " ", sr[1]).split()
-		code = times.strip("回").rjust(2, "0") + dt.strip("日").rjust(2, "0")
-		print(i, date_dt.strftime("%Y年%m月%d日"), place, u.cc[place], code)
-		print(sr[2])
+	r = Race()
+	print(r.races())
+
 	
 	# url_r = "https://race.netkeiba.com/race/result.html?race_id=202104040401&rf=race_list"
 	# url_s = "https://race.netkeiba.com/race/shutuba.html?race_id=202104040401&rf=race_submenu"
