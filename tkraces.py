@@ -3,17 +3,20 @@ from tkinter import ttk
 import pandas as pd
 import unicodedata
 import datetime
-from race import Race
 from races import Races
 # import seaborn as sns
+from race import Race
 
 class TkRaces:
   
-  def __init__(self, tk_title: str, data: list):
-    self.root = tk.Tk()
-    self.root.title("Auto Race " + tk_title)
-    self.titles = [d[0] for d in data]
-    self.dfs = [d[1] for d in data]
+  def __init__(self, tk_title: str, code: list):
+    # self.root = tk.Tk()
+    self.root = tk.Toplevel()
+    self.root.title("Race " + tk_title)
+    rs = Races(code)
+    races = rs.oneday() 
+    self.titles = [d[0] for d in races]
+    self.dfs = [d[1] for d in races]
     sizes = self.column_sizes(self.dfs[0])
     w = sum(map(lambda x: x+8, sizes)) + 50
     self.root.geometry(f"{w}x900+200+50")
@@ -41,7 +44,7 @@ class TkRaces:
 
   def races(self):
     
-    self.frame = tk.Frame(self.canvas, bg="whitesmoke")
+    self.frame = tk.Frame(self.canvas)
     seq_rows = list(range(0, len(self.dfs)*2, 2)) # [0, 2, 4, ...]
     for df, title, row in zip(self.dfs, self.titles, seq_rows):
       self.race(self.frame, df, title, row)
@@ -54,7 +57,7 @@ class TkRaces:
     l_title.grid(row=row, column=0, sticky=tk.W, pady=10, padx=10)
     # b_quit = ttk.Button(frame, text='Quit', command=lambda: self.root.quit())
     r = int(title.split("R")[0])
-    b_quit = ttk.Button(frame, text='detail', command=lambda: self.show_detail(r))
+    b_quit = ttk.Button(frame, text='more', command=lambda: self.show_detail(r))
     b_quit.grid(row=row, column=1, sticky=tk.E, pady=10, padx=10)
 
     # treeview
@@ -129,11 +132,8 @@ class TkRaces:
 if __name__ == '__main__':
 
   r = Race()
-  tpls = r.races()
-  code = tpls[0][1]
-  rs = Races(code)
-  races = rs.res()
-  # print(races)
+  tp = r.races()
+  code = tp[0][1]
 
-  t = TkRaces("title", races)
+  t = TkRaces("title", code)
   t.run()

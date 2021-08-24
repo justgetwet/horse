@@ -11,7 +11,7 @@ class Races(Race):
 	def __init__(self, code: str):
 		self.url_race = self.url_netkeiba + self.url_shutuba + code
 
-	def res(self):
+	def oneday(self):
 		# races = self.races()
 		# code = races[0][1]
 		races = []
@@ -23,7 +23,7 @@ class Races(Race):
 			course = soup.select("div.RaceData01 span")[0].text
 			ls = [r, title, course]
 			ls += [tag.text for tag in soup.select("div.RaceData02 span")[3:8]]
-			label = " ".join(ls)
+			title = " ".join(ls)
 			# print(label)
 			dfs = self.get_dfs(soup)
 			df = dfs[0].droplevel(0, axis=1)
@@ -32,7 +32,7 @@ class Races(Race):
 				srs.append(sr.drop(index=["印", "人気", "登録", "メモ"])[:-1])
 			race_df = pd.DataFrame(srs)
 			# print(race_df)
-			races.append((label, race_df))
+			races.append((title, race_df))
 
 		return races
 
@@ -42,5 +42,5 @@ if __name__ == '__main__':
 	tpls = r.races()
 	code = tpls[0][1]
 	rs = Races(code)
-	races = rs.res()
+	races = rs.oneday()
 	print(races)
