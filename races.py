@@ -2,7 +2,6 @@ import pandas as pd
 import re
 # import json
 # import pathlib
-import pandas as pd
 import datetime
 from race import Race
 
@@ -17,6 +16,7 @@ class Races(Race):
 		races = []
 		for r in range(1,13):
 			url = self.url_race + str(r).rjust(2,"0")
+			print(url)
 			soup = self.get_soup(url)
 			r = soup.select_one("div.RaceList_Item01 span.RaceNum").text
 			title = soup.select_one("div.RaceName").text.split()[0]
