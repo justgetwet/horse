@@ -62,11 +62,11 @@ class Urls:
 
 class Race(Soup, Urls):
 	
-	def races(self):
+	def hold(self):
 		soup = self.get_soup(self.url_yahookeiba)
 		dfs = self.get_dfs(soup)
 		df = dfs[5]
-		res = []
+		races = []
 		for idx, sr in df.iterrows():
 			dts = sr[0].split()
 			date_str = "2021年" + dts[0]
@@ -77,9 +77,9 @@ class Race(Soup, Urls):
 			code += self.cc[place] + k.strip("回").rjust(2, "0") + d.strip("日").rjust(2, "0")
 			held = date_dt.strftime("%Y年%m月%d日") + "(" + dts[1][0] + ") " + place
 			mainrace = sr[2]
-			res.append((idx, code, held, mainrace)) # (0, '010203', '2021年08月21日 札幌', '札幌日刊スポーツ杯')
+			races.append((idx, code, held, mainrace)) # (0, '010203', '2021年08月21日 札幌', '札幌日刊スポーツ杯')
 
-		return res
+		return races
 
 if __name__ == '__main__':
 
